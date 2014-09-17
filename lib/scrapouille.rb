@@ -3,10 +3,10 @@ require 'nokogiri'
 
 class Scrapouille
 
-  def self.scrap!
-    scraper = new 
+  def self.configure
+    scraper = new
     yield scraper
-    scraper.run!
+    scraper
   end
 
   def uri(uri)
@@ -22,7 +22,7 @@ class Scrapouille
     end
   end
 
-  def run!
+  def scrap!
     web_page = open(@uri).read
     html = Nokogiri::HTML(web_page)
     @rules.inject({}) do |memo, rule|
