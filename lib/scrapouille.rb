@@ -3,11 +3,28 @@ require 'nokogiri'
 
 class Scrapouille
 
-  def scrap!
-    web_page = open('http://www.tennis.com/player/468/richard-gasquet/').read
+  def self.scrap!
+    scraper = new 
+    yield scraper
+    scraper.run!
+  end
+
+  def uri(uri)
+    @uri = uri
+  end
+
+  def add_rule(rule)
+    (@rules ||= []) << rule
+  end
+
+  def run!
+    web_page = open(@uri).read
     html = Nokogiri::HTML(web_page)
-    fullname = html.xpath("//div[@class='player-name']/h1/child::text()").text
-    {fullname: fullname.strip}
+    @rules.inject({}) do |memo, rule|
+      key, value = rule.first
+      memo[key] = html.xpath(value).text.strip 
+      memo
+    end
   end
 
 end
