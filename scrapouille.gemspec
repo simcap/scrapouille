@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "scrapouille"
-  spec.version       = "0.0.1"
+  spec.version       = "0.0.2"
   spec.authors       = ["simcap"]
   spec.summary       = %q{Simpe declarative HTML scrapper}
   spec.description   = %q{Simpe declarative HTML scrapper}
