@@ -1,13 +1,11 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "scrapouille"
   spec.version       = "0.0.1"
   spec.authors       = ["simcap"]
-  spec.summary       = %q{Simpe declarative scrapper}
-  spec.description   = %q{Simpe declarative scrapper}
+  spec.summary       = %q{Simpe declarative HTML scrapper}
+  spec.description   = %q{Simpe declarative HTML scrapper}
   spec.homepage      = "https://github.com/simcap/scrapouille"
 
   spec.files         = `git ls-files -z`.split("\x0")
