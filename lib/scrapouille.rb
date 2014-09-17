@@ -3,34 +3,30 @@ require 'nokogiri'
 
 class Scrapouille
 
-  def self.configure
-    scraper = new
-    yield scraper
-    scraper
+  def initialize(&block)
+    @rules = []
+    instance_eval(&block)
   end
 
-  def uri(uri)
-    @uri = uri
-  end
-
-  def add_rule(property, xpath)
-    @rules ||= []
+  def scrap(property, xpath_options)
+    raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
+    xpath_string = xpath_options[:at]
     if block_given?
-      @rules << [property, xpath, Proc.new]
+      @rules << [property, xpath_string, Proc.new]
     else
-      @rules << [property, xpath]
+      @rules << [property, xpath_string]
     end
   end
 
-  def scrap!
-    web_page = open(@uri).read
+  def scrap!(uri)
+    web_page = open(uri).read
     html = Nokogiri::HTML(web_page)
-    @rules.inject({}) do |memo, rule|
+    @rules.inject({}) do |result, rule|
       property, xpath, block = rule
       content = html.xpath(xpath).text.strip 
       content = block.call(content) if block
-      memo[property.to_sym] = content 
-      memo
+      result[property.to_sym] = content 
+      result
     end
   end
 
