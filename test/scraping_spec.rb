@@ -1,9 +1,6 @@
-require 'minitest/autorun'
-require 'minitest/pride'
+require 'helper'
 
-require_relative '../lib/scrapouille' 
-
-class ScrapingTest < MiniTest::Test
+class ScrapingTest < MiniTest::Unit::TestCase
 
   def test_one_player_scrapping
     scraper = Scrapouille.new do 
