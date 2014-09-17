@@ -13,16 +13,23 @@ class Scrapouille
     @uri = uri
   end
 
-  def add_rule(rule)
-    (@rules ||= []) << rule
+  def add_rule(property, xpath)
+    @rules ||= []
+    if block_given?
+      @rules << [property, xpath, Proc.new]
+    else
+      @rules << [property, xpath]
+    end
   end
 
   def run!
     web_page = open(@uri).read
     html = Nokogiri::HTML(web_page)
     @rules.inject({}) do |memo, rule|
-      key, value = rule.first
-      memo[key] = html.xpath(value).text.strip 
+      property, xpath, block = rule
+      content = html.xpath(xpath).text.strip 
+      content = block.call(content) if block
+      memo[property.to_sym] = content 
       memo
     end
   end
