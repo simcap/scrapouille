@@ -5,7 +5,7 @@ class Scrapouille
 
   def initialize(&block)
     @rules = []
-    instance_eval(&block)
+    instance_eval(&block) if block_given?
   end
 
   def scrap(property, xpath_options)
