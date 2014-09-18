@@ -6,13 +6,17 @@ Why XPath ? XPath is powerful enough to get any data on a HTML document (see htt
 
 Scrapouille run XPath queries using the **nokogiri** gem
 
-# Usage
-
 ### Install
 
-  gem install 'scrapouille'
+    gem install 'scrapouille'
 
-### Interactive
+### Test
+
+    rake
+
+# Usage
+
+### Interactive mode
 
 From the command line you can interact with a remote web page as if it was local
 
