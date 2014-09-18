@@ -1,6 +1,6 @@
 require 'helper'
 
-class ScrapingTest < MiniTest::Unit::TestCase
+class TestScraping < MiniTest::Unit::TestCase
 
   def test_one_player_scrapping
     scraper = Scrapouille.new do 

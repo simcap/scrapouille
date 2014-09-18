@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+
+require 'scrapouille'
+require 'readline'
+require 'open-uri'
+require 'tempfile'
+
+abort 'Missing uri parameter' if ARGV.empty?
+
+uri = URI(ARGV.shift)
+
+if uri.scheme && uri.scheme.start_with?('http')
+  file = Tempfile.new('scrapouille-')
+  puts 'Fetching remote content ...'
+  file.write(open(uri).read)
+  uri = file.path
+  puts "Tempfile created at #{file.path}"
+else
+  path = uri.to_s
+  abort "Cannot find file '#{path}'" unless File.exists?(path)
+end
+
+while provided_xpath = Readline.readline("> ", true)
+  scraper = Scrapouille.new
+  to_eval = "scrap :item, at: \"#{provided_xpath}\""
+  scraper.instance_eval(to_eval)
+  begin
+    puts scraper.scrap!(uri.to_s)[:item]
+  rescue => e
+    puts e.message
+  end
+end
+
+if file
+  puts "Closing and deleting temp file"
+  file.close
+  file.unlink
+end
