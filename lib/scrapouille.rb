@@ -30,11 +30,20 @@ class Scrapouille
     html = Nokogiri::HTML(web_page)
     item_results = @rules.inject({}) do |result, rule|
       property, xpath, block = rule
-      content = html.xpath(xpath).text.strip 
+
+      content = html.xpath(xpath)
+      content = content.first if content.respond_to? :first
+
+      if Nokogiri::XML::Attr === content
+        content = content.value
+      else
+        content = content.text.strip
+      end
       content = block.call(content) if block
       result[property.to_sym] = content 
       result
     end
+
     collection_results = @collection_rules.inject({}) do |result, rule|
       property, xpath, block = rule
       content = html.xpath(xpath)
@@ -47,6 +56,7 @@ class Scrapouille
       end
       result
     end
+
     item_results.merge(collection_results)
   end
 

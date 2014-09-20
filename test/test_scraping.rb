@@ -21,6 +21,19 @@ class TestScraping < MiniTest::Unit::TestCase
       results)
   end
 
+  def test_scrap_attribute_value
+    scraper = Scrapouille.new do 
+      scrap 'djokovic_picture_src', at: "//img[contains(@src, 'djokovicz')]/@src"
+    end
+
+    results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-players-listing.html'))
+
+    assert_equal(
+      { djokovic_picture_src: 'http://cdn.tennis.com/uploads/img/2014/06/12/djokoviczz/regular.jpg' }, 
+      results
+    )
+  end
+
   def test_scrap_all_attributes_value
     scraper = Scrapouille.new do 
       scrap_all 'players_hrefs', at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
