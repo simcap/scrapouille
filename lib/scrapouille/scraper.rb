@@ -23,30 +23,14 @@ module Scrapouille
       page = open(uri).read
 
       results = @rules[:collect_unique].inject({}) do |acc, rule|
-        property, xpath, block = rule
-
-        item = XpathRunner.new(xpath, page).get_unique
-        sanitize!(item)
-
-        item.map! do |i|
-          block.call(i) 
-        end if block
-
-        acc[property.to_sym] = item.first 
+        property, items = process_rule(rule, page)
+        acc[property] = items.first
         acc
       end
 
       @rules[:collect_all].inject(results) do |acc, rule|
-        property, xpath, block = rule
-
-        items = XpathRunner.new(xpath, page).get_all
-        sanitize!(items)
-
-        items.map! do |i|
-          block.call(i) 
-        end if block
-
-        acc[property.to_sym] = items
+        property, items = process_rule(rule, page)
+        acc[property] = items
         acc
       end
 
@@ -54,6 +38,19 @@ module Scrapouille
     end
 
     private
+
+    def process_rule(rule, page)
+      property, xpath, block = rule
+
+      items = XpathRunner.new(xpath, page).get
+      sanitize!(items)
+
+      items.map! do |i|
+        block.call(i) 
+      end if block
+
+      [property, items]
+    end
 
     def sanitize!(items)
       items.map!(&:strip)

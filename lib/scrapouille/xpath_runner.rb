@@ -11,19 +11,7 @@ module Scrapouille
     attr_reader :xpath, :html_content
     private :xpath, :html_content
 
-    def get_unique
-      result = html_content.xpath(xpath)
-
-      result = result.first if result.respond_to? :first
-
-      if Nokogiri::XML::Attr === result
-        [result.value]
-      else
-        [result.text]
-      end
-    end
-
-    def get_all
+    def get
       result = html_content.xpath(xpath)
 
       if peek = result.first
@@ -32,6 +20,8 @@ module Scrapouille
         else
           result.map(&:text) 
         end
+      else
+        []
       end
     end
 

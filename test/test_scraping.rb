@@ -14,16 +14,16 @@ class TestScraping < MiniTest::Unit::TestCase
     results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-player.html'))
 
     assert_equal({
-      fullname: 'Richard Gasquet',
-      image_url: 'http://cdn.tennis.com/uploads/img/2014/06/12/gasquet/regular.jpg',
-      rank: 21
+      'fullname' => 'Richard Gasquet',
+      'image_url' => 'http://cdn.tennis.com/uploads/img/2014/06/12/gasquet/regular.jpg',
+      'rank' => 21
       }, 
       results)
   end
 
   def test_scrap_attribute_value
     scraper = Scrapouille.configure do 
-      scrap 'djokovic_picture_src', at: "//img[contains(@src, 'djokovicz')]/@src"
+      scrap :djokovic_picture_src, at: "//img[contains(@src, 'djokovicz')]/@src"
     end
 
     results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-players-listing.html'))
@@ -36,7 +36,7 @@ class TestScraping < MiniTest::Unit::TestCase
 
   def test_scrap_all_attributes_value
     scraper = Scrapouille.configure do 
-      scrap_all 'players_hrefs', at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
+      scrap_all :players_hrefs, at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
     end
 
     results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-players-listing.html'))
@@ -56,15 +56,15 @@ class TestScraping < MiniTest::Unit::TestCase
 
     results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-players-listing.html'))
 
-    assert results[:players_names]
-    assert_equal 119, results[:players_names].count
-    assert_equal 'stan wawrinka', results[:players_names][3]
+    assert results['players_names']
+    assert_equal 119, results['players_names'].count
+    assert_equal 'stan wawrinka', results['players_names'][3]
   end
 
   def test_both_scrap_and_scrap_all
     scraper = Scrapouille.configure do 
-      scrap 'djokovic_picture_src', at: "//img[contains(@src, 'djokovicz')]/@src"
-      scrap_all 'players_hrefs', at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
+      scrap :djokovic_picture_src, at: "//img[contains(@src, 'djokovicz')]/@src"
+      scrap_all :players_hrefs, at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
     end
 
     results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-players-listing.html'))
