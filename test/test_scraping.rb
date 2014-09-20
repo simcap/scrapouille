@@ -59,6 +59,23 @@ class TestScraping < MiniTest::Unit::TestCase
     assert_equal 'Novak Djokovic', results[:players_names].first
   end
 
+  def test_both_scrap_and_scrap_all
+    scraper = Scrapouille.new do 
+      scrap 'djokovic_picture_src', at: "//img[contains(@src, 'djokovicz')]/@src"
+      scrap_all 'players_hrefs', at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
+    end
+
+    results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-players-listing.html'))
+
+    assert results[:players_hrefs]
+    assert_equal 119, results[:players_hrefs].count
+
+    assert_equal(
+      'http://cdn.tennis.com/uploads/img/2014/06/12/djokoviczz/regular.jpg',
+      results[:djokovic_picture_src] 
+    )
+  end
+
 
   def test_raise_when_no_at_options
     error = assert_raises(RuntimeError) do
