@@ -31,7 +31,7 @@ module Scrapouille
       item_results = @rules[:single].inject({}) do |result, rule|
         property, xpath, block = rule
 
-        content = XpathRunner.new(xpath, page).get
+        content = XpathRunner.new(xpath, page).get_unique
         content.strip!
         content = block.call(content) if block
 
@@ -42,7 +42,7 @@ module Scrapouille
       collection_results = @rules[:multiple].inject({}) do |result, rule|
         property, xpath, block = rule
 
-        content = XpathRunner.new(xpath, page, false).get
+        content = XpathRunner.new(xpath, page, false).get_all
 
         result[property.to_sym] = content
         result

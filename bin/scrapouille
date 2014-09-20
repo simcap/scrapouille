@@ -23,7 +23,7 @@ end
 while provided_xpath = Readline.readline("> ", true)
   begin
     content = File.read(uri.to_s)
-    result = Scrapouille::XpathRunner.new(provided_xpath, content).get
+    result = Scrapouille::XpathRunner.new(provided_xpath, content).get_unique
     puts result
   rescue => e
     puts e.message

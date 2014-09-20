@@ -12,24 +12,26 @@ module Scrapouille
     attr_reader :xpath, :html_content, :unique_result
     private :xpath, :html_content, :unique_result
 
-    def get
+    def get_unique
       result = html_content.xpath(xpath)
 
-      if unique_result
-        result = result.first if result.respond_to? :first
+      result = result.first if result.respond_to? :first
 
-        if Nokogiri::XML::Attr === result
-          return result.value
-        else
-          return result.text
-        end
+      if Nokogiri::XML::Attr === result
+        result.value
       else
-        if peek = result.first
-          if Nokogiri::XML::Attr === peek
-            return result.map(&:value) 
-          else
-            return result.map(&:text) 
-          end
+        result.text
+      end
+    end
+
+    def get_all
+      result = html_content.xpath(xpath)
+
+      if peek = result.first
+        if Nokogiri::XML::Attr === peek
+          result.map(&:value) 
+        else
+          result.map(&:text) 
         end
       end
     end
