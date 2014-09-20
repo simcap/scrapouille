@@ -54,10 +54,6 @@ module Scrapouille
       [property, items]
     end
 
-    def sanitize!(items)
-      items.map!(&:strip)
-    end
-
     def add_rule(bucket, property, xpath_options, block = nil)
       raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
       @rules[bucket] << ([property, xpath_options[:at], block].compact)
