@@ -3,7 +3,7 @@ require 'helper'
 class TestScraping < MiniTest::Unit::TestCase
 
   def test_scrap_text
-    scraper = Scrapouille.new do 
+    scraper = Scrapouille.configure do 
       scrap 'fullname', at: "//div[@class='player-name']/h1/child::text()"
       scrap 'image_url', at: "//div[@id='basic']//img/attribute::src"
       scrap 'rank', at: "//div[@class='position']/text()" do |c|
@@ -22,7 +22,7 @@ class TestScraping < MiniTest::Unit::TestCase
   end
 
   def test_scrap_attribute_value
-    scraper = Scrapouille.new do 
+    scraper = Scrapouille.configure do 
       scrap 'djokovic_picture_src', at: "//img[contains(@src, 'djokovicz')]/@src"
     end
 
@@ -35,7 +35,7 @@ class TestScraping < MiniTest::Unit::TestCase
   end
 
   def test_scrap_all_attributes_value
-    scraper = Scrapouille.new do 
+    scraper = Scrapouille.configure do 
       scrap_all 'players_hrefs', at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
     end
 
@@ -48,7 +48,7 @@ class TestScraping < MiniTest::Unit::TestCase
   end
 
   def test_scrap_all_text
-    scraper = Scrapouille.new do 
+    scraper = Scrapouille.configure do 
       scrap_all 'players_names', at: "//table[contains(@class, 'ranking-table')]//a[not(child::img)]/text()"
     end
 
@@ -60,7 +60,7 @@ class TestScraping < MiniTest::Unit::TestCase
   end
 
   def test_both_scrap_and_scrap_all
-    scraper = Scrapouille.new do 
+    scraper = Scrapouille.configure do 
       scrap 'djokovic_picture_src', at: "//img[contains(@src, 'djokovicz')]/@src"
       scrap_all 'players_hrefs', at: "//table[contains(@class, 'ranking-table')]//a[child::img]/@href"
     end
@@ -79,7 +79,7 @@ class TestScraping < MiniTest::Unit::TestCase
 
   def test_raise_when_no_at_options
     error = assert_raises(RuntimeError) do
-      scraper = Scrapouille.new do 
+      scraper = Scrapouille.configure do 
         scrap 'fullname', {}
       end
     end
