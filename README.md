@@ -23,6 +23,7 @@ From the command line you can interact with a remote web page as if it was local
     $ scrapouille http://tennis.com/player.html        # launch scrapouille on the command line with a provided URI
     > //div[@class='player-name']/h1/child::text()     # You will get a prompt. Enter a xpath query
     Richard Gasquest                                   # Get the result string
+    >
 
 **Behind the scene - during the session - the remote web page is stored in a `Tempfile` for fast xpath interaction**
 
@@ -31,6 +32,7 @@ You can also directly interact with a local file
     $ scrapouille /Users/simon/web/player.html         # launch scrapouille on the command line with a provided filepath
     > //div[@class='player-name']/h1/child::text()     # enter your xpath query
     Richard Gasquest                                   # Get the result String
+    >
 
 ### Scraping programatically
 
