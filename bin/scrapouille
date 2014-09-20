@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'scrapouille'
+require_relative '../lib/scrapouille/xpath_runner'
 require 'readline'
 require 'open-uri'
 require 'tempfile'
@@ -21,11 +21,10 @@ else
 end
 
 while provided_xpath = Readline.readline("> ", true)
-  scraper = Scrapouille.new
-  to_eval = "scrap :item, at: \"#{provided_xpath}\""
-  scraper.instance_eval(to_eval)
   begin
-    puts scraper.scrap!(uri.to_s)[:item]
+    content = File.read(uri.to_s)
+    result = Scrapouille::XpathRunner.new(provided_xpath, content).get
+    puts result
   rescue => e
     puts e.message
   end
