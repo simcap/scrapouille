@@ -10,45 +10,49 @@ module Scrapouille
     end
 
     def scrap_all(property, xpath_options)
-      raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
-      xpath_string = xpath_options[:at]
-      @rules[:multiple] << [property, xpath_string]
+      block = Proc.new if block_given? 
+      add_rule_to(:multiple, property, xpath_options, block)
     end
 
     def scrap(property, xpath_options)
-      raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
-      xpath_string = xpath_options[:at]
-      if block_given?
-        @rules[:single] << [property, xpath_string, Proc.new]
-      else
-        @rules[:single] << [property, xpath_string]
-      end
+      block = Proc.new if block_given? 
+      add_rule_to(:single, property, xpath_options, block)
     end
 
     def scrap!(uri)
       page = open(uri).read
 
-      item_results = @rules[:single].inject({}) do |result, rule|
+      item_results = @rules[:single].inject({}) do |acc, rule|
         property, xpath, block = rule
 
-        content = XpathRunner.new(xpath, page).get_unique
-        content.strip!
-        content = block.call(content) if block
+        result = XpathRunner.new(xpath, page).get_unique
+        result.strip!
+        result = block.call(result) if block
 
-        result[property.to_sym] = content 
-        result
+        acc[property.to_sym] = result 
+        acc
       end
 
-      collection_results = @rules[:multiple].inject({}) do |result, rule|
+      collection_results = @rules[:multiple].inject({}) do |acc, rule|
         property, xpath, block = rule
 
-        content = XpathRunner.new(xpath, page, false).get_all
+        results = XpathRunner.new(xpath, page).get_all
+        results = results.map do |r|
+          block.call(r) 
+        end if block
 
-        result[property.to_sym] = content
-        result
+        acc[property.to_sym] = results
+        acc
       end
 
       item_results.merge(collection_results)
+    end
+
+    private
+
+    def add_rule_to(bucket, property, xpath_options, block = nil)
+      raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
+      @rules[bucket] << ([property, xpath_options[:at], block].compact)
     end
 
   end

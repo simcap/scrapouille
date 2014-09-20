@@ -3,14 +3,13 @@ require 'nokogiri'
 module Scrapouille
   class XpathRunner
 
-    def initialize(xpath, html, unique_result = true)
+    def initialize(xpath, html)
       @xpath = xpath 
       @html_content = Nokogiri::HTML(html)
-      @unique_result = unique_result
     end
 
-    attr_reader :xpath, :html_content, :unique_result
-    private :xpath, :html_content, :unique_result
+    attr_reader :xpath, :html_content
+    private :xpath, :html_content
 
     def get_unique
       result = html_content.xpath(xpath)

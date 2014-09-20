@@ -49,14 +49,16 @@ class TestScraping < MiniTest::Unit::TestCase
 
   def test_scrap_all_text
     scraper = Scrapouille.configure do 
-      scrap_all 'players_names', at: "//table[contains(@class, 'ranking-table')]//a[not(child::img)]/text()"
+      scrap_all 'players_names', at: "//table[contains(@class, 'ranking-table')]//a[not(child::img)]/text()" do |c|
+        c.downcase
+      end
     end
 
     results = scraper.scrap!(File.join(__dir__, 'fixtures', 'tennis-players-listing.html'))
 
     assert results[:players_names]
     assert_equal 119, results[:players_names].count
-    assert_equal 'Novak Djokovic', results[:players_names].first
+    assert_equal 'stan wawrinka', results[:players_names][3]
   end
 
   def test_both_scrap_and_scrap_all
