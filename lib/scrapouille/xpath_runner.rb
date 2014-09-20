@@ -17,9 +17,9 @@ module Scrapouille
       result = result.first if result.respond_to? :first
 
       if Nokogiri::XML::Attr === result
-        result.value
+        [result.value]
       else
-        result.text
+        [result.text]
       end
     end
 

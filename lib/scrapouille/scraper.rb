@@ -5,52 +5,61 @@ module Scrapouille
   class Scraper
 
     def initialize(&block)
-      @rules = {single: [], multiple: []} 
+      @rules = {collect_unique: [], collect_all: []} 
       instance_eval(&block) if block_given?
     end
 
     def scrap_all(property, xpath_options)
       block = Proc.new if block_given? 
-      add_rule_to(:multiple, property, xpath_options, block)
+      add_rule(:collect_all, property, xpath_options, block)
     end
 
     def scrap(property, xpath_options)
       block = Proc.new if block_given? 
-      add_rule_to(:single, property, xpath_options, block)
+      add_rule(:collect_unique, property, xpath_options, block)
     end
 
     def scrap!(uri)
       page = open(uri).read
 
-      item_results = @rules[:single].inject({}) do |acc, rule|
+      results = @rules[:collect_unique].inject({}) do |acc, rule|
         property, xpath, block = rule
 
-        result = XpathRunner.new(xpath, page).get_unique
-        result.strip!
-        result = block.call(result) if block
+        item = XpathRunner.new(xpath, page).get_unique
+        sanitize!(item)
 
-        acc[property.to_sym] = result 
-        acc
-      end
-
-      collection_results = @rules[:multiple].inject({}) do |acc, rule|
-        property, xpath, block = rule
-
-        results = XpathRunner.new(xpath, page).get_all
-        results = results.map do |r|
-          block.call(r) 
+        item.map! do |i|
+          block.call(i) 
         end if block
 
-        acc[property.to_sym] = results
+        acc[property.to_sym] = item.first 
         acc
       end
 
-      item_results.merge(collection_results)
+      @rules[:collect_all].inject(results) do |acc, rule|
+        property, xpath, block = rule
+
+        items = XpathRunner.new(xpath, page).get_all
+        sanitize!(items)
+
+        items.map! do |i|
+          block.call(i) 
+        end if block
+
+        acc[property.to_sym] = items
+        acc
+      end
+
+      results
     end
 
     private
 
-    def add_rule_to(bucket, property, xpath_options, block = nil)
+    def sanitize!(items)
+      items.map!(&:strip)
+    end
+
+    def add_rule(bucket, property, xpath_options, block = nil)
       raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
       @rules[bucket] << ([property, xpath_options[:at], block].compact)
     end
