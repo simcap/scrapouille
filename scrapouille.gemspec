@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "scrapouille"
-  spec.version       = "0.0.4"
+  spec.version       = "0.0.5"
   spec.authors       = ["simcap"]
   spec.summary       = %q{Interactive and declarative XPath driven HTML scraper}
   spec.description   = %q{Interactive and declarative XPath driven HTML scraper}
