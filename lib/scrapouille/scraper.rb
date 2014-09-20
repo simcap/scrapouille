@@ -1,5 +1,6 @@
 require 'open-uri'
 require_relative 'xpath_runner'
+require_relative 'sanitizer'
 
 module Scrapouille
   class Scraper
@@ -43,7 +44,8 @@ module Scrapouille
       property, xpath, block = rule
 
       items = XpathRunner.new(xpath, page).get
-      sanitize!(items)
+
+      Sanitizer.clean!(items)
 
       items.map! do |i|
         block.call(i) 
