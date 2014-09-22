@@ -22,9 +22,16 @@ module Scrapouille
       add_rule(:collect_unique, property, xpath_options, block)
     end
 
-    def scrap_each!(uris)
-      raise ArgumentError, 'Expecting enumerable as argument' unless uris.respond_to? :map
-      uris.map do |uri|
+    def scrap_each!(*uris)
+      if uris.length == 1 
+        full_uris = uris.first
+      elsif uris.length == 2
+        root, relative_uris = *uris
+        full_uris = relative_uris.map do |uri| "#{root}/#{uri}" end
+      else
+        raise ArgumentError, "Expecting 1 or 2 arguments when calling #{__callee__}"
+      end
+      full_uris.map do |uri|
         scrap!(uri)
       end
     end
