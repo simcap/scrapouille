@@ -5,21 +5,9 @@ require_relative 'sanitizer'
 module Scrapouille
   class Scraper
 
-    def initialize(&block)
-      @rules = {collect_unique: [], collect_all: []} 
-      instance_eval(&block) if block_given?
-    end
-
-    def scrap_all(property, xpath_options)
-      ensure_valid_definition(property, xpath_options)
-      block = Proc.new if block_given? 
-      add_rule(:collect_all, property, xpath_options, block)
-    end
-
-    def scrap(property, xpath_options)
-      ensure_valid_definition(property, xpath_options)
-      block = Proc.new if block_given? 
-      add_rule(:collect_unique, property, xpath_options, block)
+    def initialize(scrap_unique, scrap_all)
+      @scrap_unique_rules = scrap_unique
+      @scrap_all_rules = scrap_all 
     end
 
     def scrap_each!(*uris)
@@ -39,14 +27,14 @@ module Scrapouille
     def scrap!(uri)
       page = open(uri).read
 
-      results = @rules[:collect_unique].inject({}) do |acc, rule|
-        property, items = process_rule(rule, page)
+      results = @scrap_unique_rules.inject({}) do |acc, rule|
+        property, items = run_rule(rule, page)
         acc[property] = items.first
         acc
       end
 
-      @rules[:collect_all].inject(results) do |acc, rule|
-        property, items = process_rule(rule, page)
+      @scrap_all_rules.inject(results) do |acc, rule|
+        property, items = run_rule(rule, page)
         acc[property] = items
         acc
       end
@@ -56,8 +44,8 @@ module Scrapouille
 
     private
 
-    def process_rule(rule, page)
-      property, xpath, block = rule
+    def run_rule(rule, page)
+      property, xpath, block = rule.property, rule.xpath_string, rule.block
 
       items = XpathRunner.new(xpath, page).get
 
@@ -68,15 +56,6 @@ module Scrapouille
       end if block
 
       [property, items]
-    end
-
-    def add_rule(bucket, property, xpath_options, block = nil)
-      @rules[bucket] << ([property, xpath_options[:at], block].compact)
-    end
-
-    def ensure_valid_definition(property, xpath_options)
-      raise ArgumentError, 'Expecting Hash as second argument for scraping rules' unless Hash === xpath_options
-      raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
     end
 
   end
