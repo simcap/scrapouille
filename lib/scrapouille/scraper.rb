@@ -11,13 +11,22 @@ module Scrapouille
     end
 
     def scrap_all(property, xpath_options)
+      ensure_valid_definition(property, xpath_options)
       block = Proc.new if block_given? 
       add_rule(:collect_all, property, xpath_options, block)
     end
 
     def scrap(property, xpath_options)
+      ensure_valid_definition(property, xpath_options)
       block = Proc.new if block_given? 
       add_rule(:collect_unique, property, xpath_options, block)
+    end
+
+    def scrap_each!(uris)
+      raise ArgumentError, 'Expecting enumerable as argument' unless uris.respond_to? :map
+      uris.map do |uri|
+        scrap!(uri)
+      end
     end
 
     def scrap!(uri)
@@ -55,8 +64,12 @@ module Scrapouille
     end
 
     def add_rule(bucket, property, xpath_options, block = nil)
-      raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
       @rules[bucket] << ([property, xpath_options[:at], block].compact)
+    end
+
+    def ensure_valid_definition(property, xpath_options)
+      raise ArgumentError, 'Expecting Hash as second argument for scraping rules' unless Hash === xpath_options
+      raise "Missing 'at:' option for '#{property}'" unless xpath_options[:at]
     end
 
   end

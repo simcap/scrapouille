@@ -21,6 +21,37 @@ class TestScraping < MiniTest::Unit::TestCase
       results)
   end
 
+  def test_scrap_each
+    scraper = Scrapouille.configure do 
+      scrap 'fullname', at: "//div[@class='player-name']/h1/child::text()"
+      scrap 'image_url', at: "//div[@id='basic']//img/attribute::src"
+      scrap 'rank', at: "//div[@class='position']/text()" do |c|
+        Integer(c.sub('#', '')) 
+      end
+    end
+
+    results = scraper.scrap_each!([
+      File.join(__dir__, 'fixtures', 'tennis-player.html'), 
+      File.join(__dir__, 'fixtures', 'other-tennis-player.html')
+    ])
+
+    assert Array === results
+    assert_equal({
+      'fullname' => 'Richard Gasquet',
+      'image_url' => 'http://cdn.tennis.com/uploads/img/2014/06/12/gasquet/regular.jpg',
+      'rank' => 21
+      }, 
+      results[0]
+    )
+    assert_equal({
+      'fullname' => 'Rafael Nadal',
+      'image_url' => 'http://cdn.tennis.com/uploads/img/1201/01/01/rnadal/regular.jpg',
+      'rank' => 2
+      }, 
+      results[1]
+    )
+  end
+
   def test_scrap_attribute_value
     scraper = Scrapouille.configure do 
       scrap :djokovic_picture_src, at: "//img[contains(@src, 'djokovicz')]/@src"
