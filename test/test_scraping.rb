@@ -53,7 +53,7 @@ class TestScraping < MiniTest::Unit::TestCase
   end
 
 
-  def test_scrap_each_using_root_and_relative_uri
+  def test_scrap_each_from
     scraper = Scrapouille.configure do 
       scrap 'fullname', at: "//div[@class='player-name']/h1/child::text()"
       scrap 'image_url', at: "//div[@id='basic']//img/attribute::src"
@@ -62,7 +62,7 @@ class TestScraping < MiniTest::Unit::TestCase
       end
     end
 
-    results = scraper.scrap_each!("#{__dir__}/fixtures", ['tennis-player.html', 'other-tennis-player.html'])
+    results = scraper.scrap_each_from!("#{__dir__}/fixtures", ['tennis-player.html', 'other-tennis-player.html'])
 
     assert Array === results
     assert_equal({
