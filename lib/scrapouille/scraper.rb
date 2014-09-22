@@ -22,12 +22,11 @@ module Scrapouille
       page = open(uri).read
 
       results = @rules.inject({}) do |acc, rule|
-        property, result = rule.process do |xpath|
+        result_hash = rule.run do |xpath|
           items = XpathRunner.new(xpath, page).get
           Sanitizer.clean!(items)
         end
-        acc[property] = result
-        acc
+        acc.merge!(result_hash)
       end
 
       results

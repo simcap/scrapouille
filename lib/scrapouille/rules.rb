@@ -15,21 +15,21 @@ module Scrapouille
 
   class ScrapFirstRule < ScrapingRule
 
-    def process
+    def run
       results = yield xpath_string  
       result = results.first
       result = block.call(result) if block
-      [property, result]
+      {property => result}
     end
 
   end
 
   class ScrapAllRule < ScrapingRule
 
-    def process
+    def run
       results = yield xpath_string  
       results.map! {|i| block.call(i)} if block
-      [property, results]
+      {property => results}
     end
 
   end
