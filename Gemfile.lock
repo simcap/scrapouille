@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    scrapouille (0.0.5)
+    scrapouille (0.0.6)
       nokogiri
 
 GEM
