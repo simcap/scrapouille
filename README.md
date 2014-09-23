@@ -8,7 +8,7 @@ Scrapouille run XPath queries using the **nokogiri** gem
 
 ### Install
 
-    gem install 'scrapouille'
+    gem install scrapouille
 
 ### Test
 
